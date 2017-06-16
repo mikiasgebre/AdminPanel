@@ -20,7 +20,7 @@ export class AddUsersComponent implements CanDeactivate,OnInit {
 	
 	constructor(
 		fb: FormBuilder,
-		private _userserive: UserService,
+		private _userService: UserService,
 		private _router : Router,
 		private _routeParams: RouteParams
 
@@ -39,53 +39,44 @@ export class AddUsersComponent implements CanDeactivate,OnInit {
 	}
 
 	ngOnInit(){
-		var id = this._routeParams.get("id");
-		this.title = id ? "Edit User" : "New User"; 
-
-		if(!id)
-				return ;
-
-			this._userserive.getUserID(id)
-				.subscribe( 
-					user => this.user = user,
-					response => {
-						if (response.status  == 404) {
-							this._router.navigate(['NotFound']);
-						}
-					});
-
-	}
-
-	save(){
-		this._userserive.addUser(this.form.value)
-            .subscribe(x => {
-                // Ideally, here we'd want:
-                // this.form.markAsPristine();
-                    this._router.navigate(['Users']);
-            });
-	
-	
-
-
-	}
-	Edit(){
-this._userserive.updateUser(this.form.value)
- .subscribe(x => {
-                // Ideally, here we'd want:
-                // this.form.markAsPristine();
-                    this._router.navigate(['Users']);
-            });
-
-	}
-
-    routerCanDeactivate(){
-       if(this.form.dirty)
-       return confirm("are you sure you want to navigate away from this page?");
-
-       return true;
+        var id = this._routeParams.get("id");
+        
+        this.title = id ? "Edit User" : "New User";
+        
+        if (!id)
+			return;
+            
+        this._userService.getUser(id)
+			.subscribe(
+                user => this.user = user,
+                response => {
+                    if (response.status == 404) {
+                        this._router.navigate(['NotFound']);
+                    }
+                });
     }
-}
     
-   
+    routerCanDeactivate(){
+		if (this.form.dirty)
+			return confirm('You have unsaved changes. Are you sure you want to navigate away?');
+
+		return true; 
+	}
+    
+    save(){
+        var result;
+        
+        if (this.user.id) 
+            result = this._userService.updateUser(this.user);
+        else
+            result = this._userService.addUser(this.user)
+            
+		result.subscribe(x => {
+            // Ideally, here we'd want:
+            // this.form.markAsPristine();
+            this._router.navigate(['Users']);
+        });
+	}
 
 	
+}

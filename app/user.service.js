@@ -31,20 +31,23 @@ System.register(['angular2/core', 'angular2/http', 'rxjs/add/operator/map'], fun
                     return this._http.get(this._url)
                         .map(function (res) { return res.json(); });
                 };
-                UserService.prototype.createPost = function (post) {
-                    return this._http.post(this._url, JSON.stringify(post))
+                UserService.prototype.getUser = function (userId) {
+                    return this._http.get(this.getUserUrl(userId))
                         .map(function (res) { return res.json(); });
                 };
                 UserService.prototype.addUser = function (user) {
                     return this._http.post(this._url, JSON.stringify(user))
                         .map(function (res) { return res.json(); });
                 };
-                UserService.prototype.getUserID = function (userId) {
-                    return this._http.get(this._url + "/" + userId)
+                UserService.prototype.updateUser = function (user) {
+                    return this._http.put(this.getUserUrl(user.id), JSON.stringify(user))
                         .map(function (res) { return res.json(); });
                 };
-                UserService.prototype.updateUser = function (user) {
-                    return this._http.put(this._url, JSON.stringify(user))
+                UserService.prototype.getUserUrl = function (userId) {
+                    return this._url + "/" + userId;
+                };
+                UserService.prototype.deleteUser = function (userId) {
+                    return this._http.delete(this.getUserUrl(userId))
                         .map(function (res) { return res.json(); });
                 };
                 UserService = __decorate([

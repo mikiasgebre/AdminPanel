@@ -34,8 +34,8 @@ System.register(['angular2/core', 'angular2/router', 'angular2/common', './user.
             }],
         execute: function() {
             AddUsersComponent = (function () {
-                function AddUsersComponent(fb, _userserive, _router, _routeParams) {
-                    this._userserive = _userserive;
+                function AddUsersComponent(fb, _userService, _router, _routeParams) {
+                    this._userService = _userService;
                     this._router = _router;
                     this._routeParams = _routeParams;
                     this.user = new user_1.User();
@@ -57,35 +57,30 @@ System.register(['angular2/core', 'angular2/router', 'angular2/common', './user.
                     this.title = id ? "Edit User" : "New User";
                     if (!id)
                         return;
-                    this._userserive.getUserID(id)
+                    this._userService.getUser(id)
                         .subscribe(function (user) { return _this.user = user; }, function (response) {
                         if (response.status == 404) {
                             _this._router.navigate(['NotFound']);
                         }
                     });
                 };
-                AddUsersComponent.prototype.save = function () {
-                    var _this = this;
-                    this._userserive.addUser(this.form.value)
-                        .subscribe(function (x) {
-                        // Ideally, here we'd want:
-                        // this.form.markAsPristine();
-                        _this._router.navigate(['Users']);
-                    });
-                };
-                AddUsersComponent.prototype.Edit = function () {
-                    var _this = this;
-                    this._userserive.updateUser(this.form.value)
-                        .subscribe(function (x) {
-                        // Ideally, here we'd want:
-                        // this.form.markAsPristine();
-                        _this._router.navigate(['Users']);
-                    });
-                };
                 AddUsersComponent.prototype.routerCanDeactivate = function () {
                     if (this.form.dirty)
-                        return confirm("are you sure you want to navigate away from this page?");
+                        return confirm('You have unsaved changes. Are you sure you want to navigate away?');
                     return true;
+                };
+                AddUsersComponent.prototype.save = function () {
+                    var _this = this;
+                    var result;
+                    if (this.user.id)
+                        result = this._userService.updateUser(this.user);
+                    else
+                        result = this._userService.addUser(this.user);
+                    result.subscribe(function (x) {
+                        // Ideally, here we'd want:
+                        // this.form.markAsPristine();
+                        _this._router.navigate(['Users']);
+                    });
                 };
                 AddUsersComponent = __decorate([
                     core_1.Component({
